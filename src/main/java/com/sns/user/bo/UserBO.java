@@ -24,4 +24,8 @@ public class UserBO {
 				.email(email)
 				.build());
 	}
+	
+	public UserEntity getUserEntityByLoginIdPassword(String loginId, String hashedPassword) {
+		return userRepository.findByLoginIdAndPassword(loginId, hashedPassword);
+	}
 }

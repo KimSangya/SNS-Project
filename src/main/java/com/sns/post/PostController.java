@@ -10,6 +10,6 @@ public class PostController {
 	
 	@GetMapping("/post-list-view")
 	public String postList() {
-		return "post/postList";
+		return "timeline/timeline";
 	}
 }

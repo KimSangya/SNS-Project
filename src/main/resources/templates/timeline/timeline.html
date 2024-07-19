@@ -64,9 +64,9 @@
 				<!-- 댓글 목록 -->
 				<div class="card-comment-list m-2">
 					<!-- 댓글들 -->
-					<div class="card-comment m-1">
-						<span class="font-weight-bold">댓글쓰니</span>
-						<span>댓글 내용임</span>
+					<div class="card-comment m-1" th:if="${post.Id == comment.postId}" th:each="comment : ${commentList}">
+						<span class="font-weight-bold" th:text="${comment.userId}">댓글쓰니</span>
+						<span th:text="${comment.content}">댓글 내용임</span>
 						
 						<!-- 댓글 삭제(자신의 댓글만 가능) -->
 						<a href="#" class="comment-del-btn">
@@ -77,7 +77,7 @@
 					<!-- 댓글 쓰기 -->
 					<div class="comment-write d-flex border-top mt-2">
 						<input type="text" class="comment-input form-control border-0 mr-2" placeholder="댓글 달기">
-						<button type="button" class="comment-btn btn btn-light">게시</button>
+						<button type="button" class="comment-btn btn btn-light" th:data-post-id="${post.id}" th:data-user-id="${session.userId}">게시</button>
 					</div>
 				</div> <!-- 댓글 끝 -->
 			</div> <!-- 카드 끝 -->
@@ -191,6 +191,65 @@
 					}
 				});
 			});
-		});
+			
+			// 댓글 쓰기
+			$(".comment-btn").on('click', function() {
+				
+				// let userId = ${session.userId}; jsp문구라서 따로 할수없다.
+				let userId = $(this).data("user-id");
+				
+				if(!userId) {
+					// 비로그인
+					alert("로그인을 해주세요");
+					location.href="/user/sign-in-view";
+					return;
+				}
+				
+				// alert("하이"); 정상작동
+				// 여기서 해야 하는 것. 1. 먼저 이대로 올라가지는지에 대해서 테스트를 해봐야하고, 2. 특정 게시물에 대해서 정리를 해서 넣는 방법 3. 어떤 게시물에서 가져와서 작성을 했는지에 대해서 작성
+				let postId = $(this).data("post-id");
+				// alert(postId);
+				// parent함수에서 children 함수를 적어서 저 값을 지칭을 할수가 있다.
+				// 알아서 한번 확인
+				
+				// 1. this.버튼의 이전 태그를 할수가 있다.
+				// 부모태그가 누구인지 자식태그가 누구인지 확인을 할수있다.
+				// $(this).prev() 전태그를 확인이 가능하다.
+				// let content = $(this).prev().val().trim();
+				
+				
+				// 2.this의 근처를 기준으로 확인을 할수가 있다. (형제 태그중 input값 가져오기)
+				let content = $(this).siblings(".comment-input").val().trim();
+				console.log(content);
+				
+				if(!content) {
+					alert("댓글내용을 작성해야합니다.");
+					return;
+				}
+				
+				// 비로그인 처리일때는 확실하게 되는지 안되는지에 대한 검사가 필요하다.
+				
+				$.ajax({
+					type:"post"
+					, url : "/comment/create"
+					, data : {"postId":postId, "content":content}
+					, success:function(data) {
+						if(data.code == 200) {
+							location.reload(true);
+						} else if(data.code == 403) {
+							// 비로그인
+							alert(data.error_message);
+							location.href="/user/sign-in-view";
+						} else {
+							alert(data.error_message);
+						}
+					}
+					, error:function(e) {
+							alert("댓글쓰기에 실패하였습니다.")
+					}
+				});
+			}); 
+			
+		}); // ready 함수 끝
     </script>
 </th:block>

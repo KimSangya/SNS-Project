@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+ <mapper namespace="com.sns.follow.mapper.FollowMapper">
+ 
+ 	<select id="selectFollowList" resultType="com.sns.follow.domain.Follow">
+ 		SELECT
+ 			`id`
+			,`fromUser`
+			,`toUser`
+			,`createdAt`
+		FROM
+			`follow`
+ 	</select>
+ 
+ 	<insert id="insertFollow" parameterType="map">
+ 		INSERT INTO `follow`
+ 		(
+ 			`fromUser`
+			,`toUser`
+			,`createdAt`
+ 		)
+ 		VALUE
+ 		(
+ 			#{fromUser}
+ 			, #{toUser}
+ 			, NOW()
+ 		)
+ 	</insert>
+ </mapper>
+ 

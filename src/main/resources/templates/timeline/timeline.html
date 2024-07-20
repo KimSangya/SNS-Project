@@ -28,15 +28,25 @@
 		<div class="timeline-box my-5">
 			
 			<!-- 글(카드) 반복 -->
-			<div th:each="post : ${postList}" class="card border rounded mt-3">
+			<div th:each="post : ${postList}" class="card border rounded my-5">
 				<!-- 글쓴이, 더보기(삭제) -->
 				<div class="p-2 d-flex justify-content-between">
 					<span class="font-weight-bold" th:text="${post.userId}">글쓴이</span>
 					
-					<!-- 더보기 ...(로그인 된 사람과 글쓴이 정보 일치할 때 보이게) -->
-					<a th:if="${session.userId == post.userId}" href="#" class="more-btn">
-						<img src="https://www.iconninja.com/files/860/824/939/more-icon.png" width="30">
-					</a>
+					<!-- 더보기 ...(로그인 된 사람과 글쓴이 정보 일치할 때 보이게) / 로그인 된 사람만 보일수있도록 확인. -->
+					<div th:if="${session.userId != null}" class="d-flex">
+						<div class="mr-4" th:each="follow : ${followList}">
+						    <!-- 팔로우 버튼 -->
+						    <button type="button" class="follow-btn btn btn-primary" 
+						            th:unless="${session.userId == follow.fromUser and post.userId == follow.toUser}"
+						            th:data-post-user-id="${post.userId}" th:data-user-id="${session.userId}">
+						        팔로우
+						    </button>
+						</div>
+						<a th:if="${session.userId == post.userId}" href="#" class="more-btn">
+							<img src="https://www.iconninja.com/files/860/824/939/more-icon.png" width="30">
+						</a>
+					</div>
 				</div>
 				
 				<!-- 본문 이미지 -->
@@ -248,8 +258,46 @@
 							alert("댓글쓰기에 실패하였습니다.")
 					}
 				});
-			}); 
+			});  // ajax 끝
 			
+			$(".follow-btn").on('click', function() {
+				alert("팔로우 버튼 눌림");
+				let postUserId = $(this).data('post-user-id');
+				let userId = $(this).data('user-id');
+				
+				console.log(postUserId); // 포스트를 올린 사람 to
+				console.log(userId); // 나의 아이디의 번호를 가져옴. from
+				
+				if(!userId) {
+					alert("로그인을 해주세요");
+					location.href="/user/sign-in-view"
+				}
+				
+				// 이제 해야할 일은 내가 따로 만들어야할일. 
+				// ajax 통신으로 팔로우를 등록시킴.
+				// 그리고 성공이면 다시 리다이렉트 시키면서 버튼을 따로 팔로우 해제로 변경시킴. model를 넘겨줌으로써 다시 변경을 시킴
+				// 로그인 비로그인 다 확인 시키고, 500 에러까지 확인을 시켜야함. mybatis로 구현.
+				
+				$.ajax({
+					type:"post"
+					, url : "/follow/following"
+					, data : {"postUserId" : postUserId, "userid" : userId}
+					, success : function(data) {
+						if(data.code == 200) {
+							location.reload(true);
+						} else if(data.code == 403) {
+							// 비로그인
+							alert(data.error_message);
+							location.href="/user/sign-in-view";
+						} else {
+							alert(data.error_message);	
+						}
+					}
+					, error:function(e) {
+						alert("팔로우에 실패하였습니다.");
+					}
+				});
+			});
 		}); // ready 함수 끝
     </script>
 </th:block>

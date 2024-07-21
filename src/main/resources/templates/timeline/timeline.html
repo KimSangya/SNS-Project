@@ -37,11 +37,14 @@
 					<div th:if="${session.userId != null}" class="d-flex">
 						<div class="mr-4" th:each="follow : ${followList}">
 						    <!-- 팔로우 버튼 -->
-						    <button type="button" class="follow-btn btn btn-primary" 
-						            th:unless="${session.userId == follow.fromUser and post.userId == follow.toUser}"
-						            th:data-post-user-id="${post.userId}" th:data-user-id="${session.userId}">
-						        팔로우
-						    </button>
+						   <div th:unless="${session.userId == follow.fromUser and post.userId == follow.toUser}">
+						    	<button type="button" class="follow-btn btn btn-primary" th:data-post-user-id="${post.userId}" th:data-user-id="${session.userId}">팔로우</button>
+						   </div>
+						   
+						   <!-- 팔로잉 버튼 -->
+						   <div th:if="${session.userId == follow.fromUser and post.userId == follow.toUser}">
+							    <button type="button" class="follow-btn btn btn-secondary" th:data-post-user-id="${post.userId}" th:data-user-id="${session.userId}">팔로잉</button>
+						    </div>
 						</div>
 						<a th:if="${session.userId == post.userId}" href="#" class="more-btn">
 							<img src="https://www.iconninja.com/files/860/824/939/more-icon.png" width="30">
@@ -281,7 +284,7 @@
 				$.ajax({
 					type:"post"
 					, url : "/follow/following"
-					, data : {"postUserId" : postUserId, "userid" : userId}
+					, data : {"postUserId" : postUserId, "userId" : userId}
 					, success : function(data) {
 						if(data.code == 200) {
 							location.reload(true);

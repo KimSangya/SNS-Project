@@ -28,30 +28,30 @@
 		<div class="timeline-box my-5">
 			
 			<!-- 글(카드) 반복 -->
-			<div th:each="post : ${postList}" class="card border rounded my-5">
+			<div th:each="cardView : ${cardViewList}" class="card border rounded my-5">
 				<!-- 글쓴이, 더보기(삭제) -->
 				<div class="p-2 d-flex justify-content-between">
-					<span class="font-weight-bold" th:text="${post.userId}">글쓴이</span>
+					<span class="font-weight-bold" th:text="${cardView.user.loginId}">글쓴이</span>
 					
 					<!-- 더보기 ...(로그인 된 사람과 글쓴이 정보 일치할 때 보이게) / 로그인 된 사람만 보일수있도록 확인. -->
 					<div th:if="${session.userId != null}" class="d-flex">
-						<div class="mr-4" th:each="follow : ${followList}">
+<!--						<div class="mr-4" th:each="follow : ${followList}">
 						    <!-- 팔로우 버튼 -->
-						    <button type="button" class="follow-btn btn btn-primary" 
-						            th:unless="${session.userId == follow.fromUser and post.userId == follow.toUser}"
+						     <!--  <button type="button" class="follow-btn btn btn-primary" 
+						            th:unless="${session.userId == follow.fromUser and card.userId == follow.toUser}"
 						            th:data-post-user-id="${post.userId}" th:data-user-id="${session.userId}">
 						        팔로우
 						    </button>
-						</div>
-						<a th:if="${session.userId == post.userId}" href="#" class="more-btn">
+						</div>  -->
+						<!-- <a th:if="${session.userId == cardView.post.userId}" href="#" class="more-btn">
 							<img src="https://www.iconninja.com/files/860/824/939/more-icon.png" width="30">
-						</a>
+						</a> -->
 					</div>
 				</div>
 				
 				<!-- 본문 이미지 -->
 				<div class="card-img">
-					<img th:src="${post.imagePath}" class="w-100" alt="본문 이미지">
+					<img th:src="${cardView.post.imagePath}" class="w-100" alt="본문 이미지">
 				</div>
 				
 				<!-- 좋아요 -->
@@ -62,8 +62,8 @@
 				
 				<!-- 글 -->
 				<div class="card-post m-3">
-					<span class="font-weight-bold" th:text="${post.userId}">글쓴이</span>
-					<span th:text="${post.content}">글 내용입니다!!!!</span>
+					<span class="font-weight-bold" th:text="${cardView.user.loginId}">글쓴이</span>
+					<span th:text="${cardView.post.content}">글 내용입니다!!!!</span>
 				</div>
 				
 				<!-- 댓글 제목 -->
@@ -74,20 +74,20 @@
 				<!-- 댓글 목록 -->
 				<div class="card-comment-list m-2">
 					<!-- 댓글들 -->
-					<div class="card-comment m-1" th:if="${post.Id == comment.postId}" th:each="comment : ${commentList}">
-						<span class="font-weight-bold" th:text="${comment.userId}">댓글쓰니</span>
-						<span th:text="${comment.content}">댓글 내용임</span>
+					<div class="card-comment m-1" th:each="commentView : ${cardView.CommentList}">
+						<span class="font-weight-bold" th:text="${commentView.comment.userId}">댓글쓰니</span>
+						<span th:text="${commentView.comment.content}">댓글 내용임</span>
 						
 						<!-- 댓글 삭제(자신의 댓글만 가능) -->
-						<a href="#" class="comment-del-btn">
+						<a href="#" class="comment-del-btn" th:if="${session.userId == commentView.comment.userId}" th:data-post-id="${cardView.post.id}" th:data-user-id="${session.userId}">
 							<img src="https://www.iconninja.com/files/603/22/506/x-icon.png" width="10" height="10">
 						</a>
-					</div>
+					</div> 
 					
 					<!-- 댓글 쓰기 -->
 					<div class="comment-write d-flex border-top mt-2">
 						<input type="text" class="comment-input form-control border-0 mr-2" placeholder="댓글 달기">
-						<button type="button" class="comment-btn btn btn-light" th:data-post-id="${post.id}" th:data-user-id="${session.userId}">게시</button>
+						<button type="button" class="comment-btn btn btn-light" th:data-post-id="${cardView.post.id}" th:data-user-id="${session.userId}">게시</button>
 					</div>
 				</div> <!-- 댓글 끝 -->
 			</div> <!-- 카드 끝 -->
@@ -297,6 +297,10 @@
 						alert("팔로우에 실패하였습니다.");
 					}
 				});
+			});
+			
+			$(".comment-del-btn").on('click', function() {
+				alert("삭제 버튼 클릭");
 			});
 		}); // ready 함수 끝
     </script>

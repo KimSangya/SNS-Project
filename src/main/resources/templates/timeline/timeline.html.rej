@@ -1,21 +1,41 @@
 diff a/src/main/resources/templates/timeline/timeline.html b/src/main/resources/templates/timeline/timeline.html	(rejected hunks)
-@@ -37,11 +37,14 @@
+@@ -28,30 +28,30 @@
+ 		<div class="timeline-box my-5">
+ 			
+ 			<!-- 글(카드) 반복 -->
+-			<div th:each="post : ${postList}" class="card border rounded my-5">
++			<div th:each="cardView : ${cardViewList}" class="card border rounded my-5">
+ 				<!-- 글쓴이, 더보기(삭제) -->
+ 				<div class="p-2 d-flex justify-content-between">
+-					<span class="font-weight-bold" th:text="${post.userId}">글쓴이</span>
++					<span class="font-weight-bold" th:text="${cardView.user.loginId}">글쓴이</span>
+ 					
+ 					<!-- 더보기 ...(로그인 된 사람과 글쓴이 정보 일치할 때 보이게) / 로그인 된 사람만 보일수있도록 확인. -->
  					<div th:if="${session.userId != null}" class="d-flex">
- 						<div class="mr-4" th:each="follow : ${followList}">
+-						<div class="mr-4" th:each="follow : ${followList}">
++<!--						<div class="mr-4" th:each="follow : ${followList}">
  						    <!-- 팔로우 버튼 -->
 -						    <button type="button" class="follow-btn btn btn-primary" 
 -						            th:unless="${session.userId == follow.fromUser and post.userId == follow.toUser}"
--						            th:data-post-user-id="${post.userId}" th:data-user-id="${session.userId}">
--						        팔로우
--						    </button>
-+						   <div th:unless="${session.userId == follow.fromUser and post.userId == follow.toUser}">
-+						    	<button type="button" class="follow-btn btn btn-primary" th:data-post-user-id="${post.userId}" th:data-user-id="${session.userId}">팔로우</button>
-+						   </div>
-+						   
-+						   <!-- 팔로잉 버튼 -->
-+						   <div th:if="${session.userId == follow.fromUser and post.userId == follow.toUser}">
-+							    <button type="button" class="follow-btn btn btn-secondary" th:data-post-user-id="${post.userId}" th:data-user-id="${session.userId}">팔로잉</button>
-+						    </div>
- 						</div>
- 						<a th:if="${session.userId == post.userId}" href="#" class="more-btn">
++						     <!--  <button type="button" class="follow-btn btn btn-primary" 
++						            th:unless="${session.userId == follow.fromUser and card.userId == follow.toUser}"
+ 						            th:data-post-user-id="${post.userId}" th:data-user-id="${session.userId}">
+ 						        팔로우
+ 						    </button>
+-						</div>
+-						<a th:if="${session.userId == post.userId}" href="#" class="more-btn">
++						</div>  -->
++						<!-- <a th:if="${session.userId == cardView.post.userId}" href="#" class="more-btn">
  							<img src="https://www.iconninja.com/files/860/824/939/more-icon.png" width="30">
+-						</a>
++						</a> -->
+ 					</div>
+ 				</div>
+ 				
+ 				<!-- 본문 이미지 -->
+ 				<div class="card-img">
+-					<img th:src="${post.imagePath}" class="w-100" alt="본문 이미지">
++					<img th:src="${cardView.post.imagePath}" class="w-100" alt="본문 이미지">
+ 				</div>
+ 				
+ 				<!-- 좋아요 -->

@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -46,5 +47,28 @@ public class CommentRestController {
 		return result;
 		
 		//localhost:8080/comment/create?postId=?
+	}
+	
+	@DeleteMapping("/delete")
+	public Map<String, Object> delete(
+			@RequestParam("commentId") int commentId,
+			HttpSession session){
+		
+		// 로그인 여부 : 로그인이 안되어있을때 확인
+		Integer userId = (Integer)session.getAttribute("userId"); // 필요한것만 확인
+		Map<String, Object> result = new HashMap<>();
+				
+		if(userId == null) { // 만약 로그인이 안됐다면, 이런식으로 리턴을 해주게 된다.
+			result.put("code", 403);
+			result.put("error_message", "로그인을 해주세요");
+			return result;
+		}
+		
+		// db insert
+		commentBO.deleteComment(commentId);
+		
+		result.put("code", 200);
+		result.put("result", "성공");
+		return result;
 	}
 }

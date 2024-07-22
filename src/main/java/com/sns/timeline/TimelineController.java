@@ -7,11 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import com.sns.comment.bo.CommentBO;
-import com.sns.comment.domain.Comment;
 import com.sns.follow.bo.FollowBO;
-import com.sns.follow.domain.Follow;
-import com.sns.post.bo.PostBO;
 import com.sns.timeline.bo.TimelineBO;
 import com.sns.timeline.domain.CardView;
 

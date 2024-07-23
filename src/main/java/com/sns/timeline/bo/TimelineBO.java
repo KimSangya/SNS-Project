@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.sns.comment.bo.CommentBO;
 import com.sns.comment.domain.CommentView;
+import com.sns.like.bo.LikeBO;
 import com.sns.post.bo.PostBO;
 import com.sns.post.entity.PostEntity;
 import com.sns.timeline.domain.CardView;
@@ -26,9 +27,13 @@ public class TimelineBO {
 	@Autowired
 	private CommentBO commentBO;
 	
+	@Autowired
+	private LikeBO likeBO;
+	
 	// input : X
 	// output : List<CardView>
-	public List<CardView> generateCardViewList() {
+	public List<CardView> generateCardViewList(Integer userId) {
+		
 		List<CardView> cardViewList = new ArrayList<>();
 		
 		// 글 목록을 가져온다. List<PostEntity>
@@ -41,17 +46,29 @@ public class TimelineBO {
 			card.setPost(post);
 			
 			// 글쓴이 명을 가져오기 위해서 가져오는 것.
-			int userId = card.getPost().getUserId(); // postEntity.getUserId; // 글쓴이 번호
+			// postEntity.getUserId; // 글쓴이 번호
 			// index로 걸려있는게 좋은 쿼리다.
-			UserEntity user =  userBO.getUserEntityById(userId);
+			UserEntity user =  userBO.getUserEntityById(card.getPost().getUserId());
 			card.setUser(user);
 			
 			// 댓글 n개를 가지고 와져야한다.
 			List<CommentView> commentViewList = commentBO.generateCommentViewListByPostId(post.getId());
 			card.setCommentList(commentViewList);
 			
+			// 갯수를 리턴을 해주게 된다.
+			int likeCount = likeBO.generateLikeCountByPostId(post.getId());
+			card.setLikeCount(likeCount);
+			
+			
+			//내가 이 친구를 눌렀는지 안눌렀는지에 대해서 확인
+			if(userId != null) {
+				boolean filled = likeBO.booleanLikeByPostIdUserId(post.getId(), userId);
+				card.setFilledLike(filled);
+				cardViewList.add(card);
+			} else {
+				cardViewList.add(card);
+			}
 			// !!!반드시 리스트에 넣는다.
-			cardViewList.add(card);
 		}
 		// -> cardViewList에 꽂아넣는 행위가 필요로하다.
 		

@@ -11,6 +11,8 @@ import com.sns.follow.bo.FollowBO;
 import com.sns.timeline.bo.TimelineBO;
 import com.sns.timeline.domain.CardView;
 
+import jakarta.servlet.http.HttpSession;
+
 @Controller
 public class TimelineController {
 	
@@ -21,13 +23,18 @@ public class TimelineController {
 	private FollowBO followBO;
 	
 	@GetMapping("/timeline/timeline-view")
-	public String timelineView(Model model) {
+	public String timelineView(
+			Model model,
+			HttpSession session) {
 		
 		//	List<PostEntity> postList = postBO.getPostEntityList(); // Bo에서 가공해서 가져온다. 다른걸로 변경
 		// join 함수를 작성해서 보내는 부분.
 		
-		List<CardView> cardViewList = timelineBO.generateCardViewList();
-	//	List<Follow> followList = followBO.getFollowList();
+		Integer userId = (Integer)session.getAttribute("userId");
+			
+			
+		List<CardView> cardViewList = timelineBO.generateCardViewList(userId);
+		//	List<Follow> followList = followBO.getFollowList();
 		
 		// 내가 여기서 따로 팔로우 리스트를 가져오려면, 내가 가져온 인원이 누구인가에 대해서 리턴을 해줘야함.
 		// 그 팔로우 리스트에서 내 값을 리턴을 해주고, 그 값을 where절로 생각을 해서, 넣어주는게 필요로함.

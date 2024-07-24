@@ -30,9 +30,9 @@ public class TimelineController {
 		//	List<PostEntity> postList = postBO.getPostEntityList(); // Bo에서 가공해서 가져온다. 다른걸로 변경
 		// join 함수를 작성해서 보내는 부분.
 		
+		// input : userId를 추가를 하게 만드는것이다.
 		Integer userId = (Integer)session.getAttribute("userId");
-			
-			
+		// 따로 session에서 뽑아올수는 있지만 크게 넘어가게 될 경우 문제가 된다.	
 		List<CardView> cardViewList = timelineBO.generateCardViewList(userId);
 		//	List<Follow> followList = followBO.getFollowList();
 		

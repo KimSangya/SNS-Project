@@ -32,7 +32,7 @@ public class TimelineBO {
 	
 	// input : X
 	// output : List<CardView>
-	public List<CardView> generateCardViewList(Integer userId) {
+	public List<CardView> generateCardViewList(Integer userId) { // int로 받는 순간 비로그인이라면 null값을 받지 못하기 때문에, 따로 설정을 해줘야한다.
 		
 		List<CardView> cardViewList = new ArrayList<>();
 		
@@ -55,20 +55,25 @@ public class TimelineBO {
 			List<CommentView> commentViewList = commentBO.generateCommentViewListByPostId(post.getId());
 			card.setCommentList(commentViewList);
 			
-			// 갯수를 리턴을 해주게 된다.
-			int likeCount = likeBO.generateLikeCountByPostId(post.getId());
+			// 좋아요 개수를 리턴을 해주게 된다.
+			int likeCount = likeBO.getLikeCountByPostId(post.getId());
 			card.setLikeCount(likeCount);
 			
 			
 			//내가 이 친구를 눌렀는지 안눌렀는지에 대해서 확인
-			if(userId != null) {
-				boolean filled = likeBO.booleanLikeByPostIdUserId(post.getId(), userId);
-				card.setFilledLike(filled);
-				cardViewList.add(card);
-			} else {
-				cardViewList.add(card);
-			}
+//			if(userId != null) {
+//				boolean filled = likeBO.booleanLikeByPostIdUserId(post.getId(), userId);
+//				card.setFilledLike(filled);
+//				cardViewList.add(card);
+//			} else {
+//				cardViewList.add(card);
+//			}
 			// !!!반드시 리스트에 넣는다.
+			
+			// 하트가 채워지는지 안채워지는지에 대한 코드
+			card.setFilledLike(likeBO.filledLikeByPostIdUserId(post.getId(), userId));
+			
+			cardViewList.add(card);
 		}
 		// -> cardViewList에 꽂아넣는 행위가 필요로하다.
 		

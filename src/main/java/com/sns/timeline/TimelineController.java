@@ -8,6 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import com.sns.follow.bo.FollowBO;
+import com.sns.follow.domain.Follow;
 import com.sns.timeline.bo.TimelineBO;
 import com.sns.timeline.domain.CardView;
 
@@ -34,7 +35,7 @@ public class TimelineController {
 		Integer userId = (Integer)session.getAttribute("userId");
 		// 따로 session에서 뽑아올수는 있지만 크게 넘어가게 될 경우 문제가 된다.	
 		List<CardView> cardViewList = timelineBO.generateCardViewList(userId);
-		//	List<Follow> followList = followBO.getFollowList();
+		List<Follow> followList = followBO.getFollowList();
 		
 		// 내가 여기서 따로 팔로우 리스트를 가져오려면, 내가 가져온 인원이 누구인가에 대해서 리턴을 해줘야함.
 		// 그 팔로우 리스트에서 내 값을 리턴을 해주고, 그 값을 where절로 생각을 해서, 넣어주는게 필요로함.
@@ -44,7 +45,9 @@ public class TimelineController {
 		
 		// model.addAttribute("postList", postList);
 		model.addAttribute("cardViewList", cardViewList);
-	//	model.addAttribute("followList", followList);
+		model.addAttribute("followList", followList);
+		
+		// TODO : 팔로우 리스트를 따로 cardViewList에 넣어줘야함.
 		
 		return "timeline/timeline";
 	}

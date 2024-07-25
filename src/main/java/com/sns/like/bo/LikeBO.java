@@ -48,4 +48,8 @@ public class LikeBO {
 		// 로그인이면 1. 행이있으면(1) true 2. 없으면(0) false
 		return  likeMapper.selectLikeCountByPostIdOrUserId(postId, userId) == 1 ? true : false;
 	}
+	
+	public void deleteByPostId(int postId) {
+		likeMapper.deleteByPostId(postId);
+	}
 }

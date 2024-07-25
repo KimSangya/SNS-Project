@@ -59,6 +59,8 @@ public class TimelineBO {
 			int likeCount = likeBO.getLikeCountByPostId(post.getId());
 			card.setLikeCount(likeCount);
 			
+			// 그 사람의 팔로우를 가져와야한다.
+			// TODO : 따로 설정해서 변경해줘야함
 			
 			//내가 이 친구를 눌렀는지 안눌렀는지에 대해서 확인
 //			if(userId != null) {

@@ -33,9 +33,13 @@
 					<span class="font-weight-bold" th:text="${cardView.user.loginId}">글쓴이</span>
 					
 					<!-- 더보기 ...(로그인 된 사람과 글쓴이 정보 일치할 때 보이게) -->
-					<a th:if="${session.userId == cardView.post.userId}" href="#" class="more-btn">
-						<img src="https://www.iconninja.com/files/860/824/939/more-icon.png" width="30">
-					</a>
+					<div>
+						<a th:unless="${followList.toUser == session.userId && cardView.post.userId == followList.FromUser" class="following-btn btn btn-primary" th:data-post-user="${cardView.post.userId}">팔로우</a>
+						<a th:if="${followList.toUser == session.userId && cardView.post.userId == followList.FromUser" class="followed-btn btn btn-secondary" th:data-post-user="${cardView.post.userId}">팔로잉</a>
+						<a th:if="${session.userId == cardView.post.userId}" href="#" class="more-btn" th:data-post-id="${cardView.post.id}" data-toggle="modal" data-target="#Modal">
+							<img src="https://www.iconninja.com/files/860/824/939/more-icon.png" width="30">
+						</a>
+					</div>
 				</div>
 				
 				<!-- 본문 이미지 -->
@@ -88,7 +92,22 @@
 				</div> <!-- 댓글 끝 -->
 			</div> <!-- 카드 끝 -->
 		</div> <!-- 타임라인 박스 끝 -->
-	</div>
+	
+		<!-- Modal : 타임리프 layout 때문에, 안쪽에 위치--> <!-- session 밖으로 나가면 사용이 되지 않음. layout 의 조각에서 벗어나면 따로 사용을 할수가 없다. -->
+		<div class="modal fade" id="Modal">
+		<!--  modal-sm:작은 모달창, modal-dialog-centered:수직 가운데 정렬 -->
+	  		<div class="modal-dialog modal-sm modal-dialog-centered">
+	    		<div class="modal-content text-center">
+	    			<div class="py-3">
+	      				<a href="#" id="postDeleteBtn">삭제하기</a>
+	      			</div>
+	      			<div class="py-3 border-top">
+	      				<a href="#" data-dismiss="modal">취소</a>
+	      			</div>
+	    		</div>
+	  		</div>
+		</div>
+	</div><!-- 전체 DIV -->
 </section>
 
 <th:block layout:fragment="script">
@@ -347,6 +366,80 @@
 					}
 				});
 			});
+			// 더보기(...) a태그 클릭 => 모달 띄우기, 모달에 글번호 심어놓기
+			$(".more-btn").on("click", function(e){
+				e.preventDefault(); // a태그 위로 올라가는것을 방지합니다.
+				
+				// getting
+				let postId = $(this).data("post-id"); // this는 이 친구만 가져와서 출력하기 때문에, 그 부분에 대해서 확인을 해야합니다.
+				// alert(postId); ex) 3번 출력.
+				
+				// 1개만 존재하는 modal를 재활용하기 위해, data-post-id를 심어놓겠다.
+				$("#Modal").data('post-id', postId); //setting
+				//alert($("#Modal").data('post-id'));
+			}); // moreBtn
+			
+			$("#postDeleteBtn").on('click', function(e){
+				e.preventDefault(); // a 태그 위로 올라감 방지
+				let postId = $("#Modal").data("post-id");
+				// alert(postId);
+				// 글, 내용, 댓글, 좋아요, 그림 모두 삭제해야함.
+				// PostBO가 요청을 해서 삭제를 해야하기 때문에, 해봐야함.
+				
+				$.ajax({
+					type:"delete"
+					,url:"/post/delete"
+					,data:{"postId" : postId}
+					,success:function(data){
+						if(data.code == 200) {
+							alert("글이 삭제되었습니다.");
+							location.reload(true);
+						} else if(data.code == 403) {
+							alert(data.error_message);
+							location.href = "user/sign-in-view"
+						} 
+						
+						else {
+							alert("글이 삭제 되지 않았습니다.");
+						}
+					}
+					, error:function(e){
+						alert("삭제되지 않았습니다. 관리자에게 문의하세요");
+					}
+				});
+			});
 		}); // ready 함수 끝
+		
+		$(".following-btn").on("click", function(){
+			// alert("팔로우 눌림"); 작동 O
+			let fromUser = $(this).data("post-user");
+			// alert(fromUser);
+			
+			$.ajax({
+				type:"post"
+				, url:"/post/following"
+				, data:{"fromUser" : fromUser}
+				, success:function(data){
+					if(data.code == 200) {
+						alert("팔로우가 되었습니다!");
+						location.reload(true);
+					} else if (data.code == 403) {
+						alert("로그인을 해주세요");
+						location.href="user/sign-in-view";
+					} else { // 500번대 에러
+						alert("팔로우에 실패하였습니다.");
+					}
+				}
+				, error:function(e) {
+					alert("팔로우에 실패하였습니다. 관리자에게 문의 해주세요");
+				}
+			});
+		}); // 팔로우 버튼
+		
+		$(".followed-btn").on("click", function() {
+			let fromUser = $(this).data("post-user");
+			alert(fromUser);
+			// alert("팔로잉 눌림"); 작동 O
+		}); // 팔로잉 버튼
     </script>
 </th:block>
